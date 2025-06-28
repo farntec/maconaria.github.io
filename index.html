@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mapa de Lojas Maçônicas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding-bottom: 60px; /* Espaço para o rodapé fixo */
+      background-color: #f4f4f4;
+    }
+    h1 {
+      background-color: #2c3e50;
+      color: white;
+      padding: 20px 0;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    #searchInput {
+      padding: 12px;
+      font-size: 16px;
+      width: 90%;
+      max-width: 400px;
+      display: block;
+      margin: 0 auto 20px auto;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    .loja-card {
+      background-color: white;
+      margin: 20px auto;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 600px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+    .loja-card h2 {
+      margin-top: 0;
+      color: #2c3e50;
+    }
+    .loja-card p {
+      margin: 5px 0;
+      font-size: 16px;
+    }
+    .loja-card iframe {
+      width: 100%;
+      height: 300px;
+      border: none;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+    .buttons-container {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .gps-button {
+      padding: 10px 30px;
+      background-color: #27ae60;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: background-color 0.3s ease;
+      min-width: 120px;
+      text-align: center;
+    }
+    .gps-button:hover {
+      background-color: #219150;
+    }
+    .waze-button {
+      background-color: #1e90ff;
+    }
+    .waze-button:hover {
+      background-color: #1c86ee;
+    }
+    .footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background-color: #2c3e50;
+      color: white;
+      text-align: center;
+      padding: 15px 0;
+      font-size: 16px;
+    }
+    .footer a {
+      color: #1e90ff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .footer a:hover {
+      text-decoration: underline;
+    }
+    @media (max-width: 600px) {
+      .loja-card iframe {
+        height: 200px;
+      }
+      .gps-button {
+        width: 45%;
+        font-size: 14px;
+        min-width: auto;
+      }
+      .buttons-container {
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Mapa Lojas GOP</h1>
+
+  <input type="text" id="searchInput" placeholder="Buscar por loja, endereço, bairro, dia, rito..." oninput="mostrarLojas()">
+
+  <div id="lojasContainer"></div>
+
+  <div class="footer">
+    Criado por <a href="https://wa.me/5511963044359" target="_blank" rel="noopener noreferrer">Francisco Neto - 11 96304-4359</a>
+  </div>
+
+  <script>
+    const lojas = [
+      {
+        nome: "GUARDIÕES DO SANGREAL 435",
+        dia: "Segunda-Feira 19:30, Semanal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Avenida das Cerejeiras 40, Jardim Japão, SP",
+        lat: -23.5144691,
+        lng: -46.5819698
+      },
+      {
+        nome: "ETERNOS CONSTRUTORES",
+        dia: "Quarta-Feira 20:00, Semanal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Avenida das Cerejeiras 40, Jardim Japão, SP",
+        lat: -23.5144691,
+        lng: -46.5819698
+      },
+      {
+        nome: "CONDE DE GRASSE - TILLY",
+        dia: "Sábado 9:00H, Mensal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Avenida das Cerejeiras 40, Jardim Japão, SP",
+        lat: -23.5144691,
+        lng: -46.5819698
+      },
+      {
+        nome: "XX DE SETEMBRO",
+        dia: "Segunda-Feira 20:00, Semanal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Helvetia 557, S/Loja 3, Campos Eliseos, SP",
+        lat: -23.5359224,
+        lng: -46.6457626
+      },
+      {
+        nome: "MONTE REAL",
+        dia: "Terça-Feira 20:00, 2a/4a/semana",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Helvetia 557, S/Loja, Campos Eliseos, SP",
+        lat: -23.5359224,
+        lng: -46.6457626
+      },
+      {
+        nome: "PHOENIX LUCEM",
+        dia: "Sábado 10:00, 2a/4a/semana",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Helvetia 557, Sobreloja 3, Campos Eliseos, SP",
+        lat: -23.5359224,
+        lng: -46.6457626
+      },
+      {
+        nome: "QUATUOR CORONATI, NELSON GARÇEZ",
+        dia: "Quinta-Feira 20:00, 3a Semana",
+        rito: "Ritual de Emulação",
+        enderecoTexto: "Rua Helvetia 557, Sobreloja 3, Campos Eliseos, SP",
+        lat: -23.5359224,
+        lng: -46.6457626
+      },
+      {
+        nome: "MONTE HEBRON",
+        dia: "Terça-Feira 20:00, Semestral",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Helvetia 557, Sala 3, Campos Eliseos, SP",
+        lat: -23.5359224,
+        lng: -46.6457626
+      },
+      {
+        nome: "VIGILANTES",
+        dia: "Quarta-Feira 20:00, 1a/2a/3a/semana",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Bárbara Heliodora 307, Pompéia, SP",
+        lat: -23.5329794,
+        lng: -46.6937627
+      },
+      {
+        nome: "EVOLUÇÃO III",
+        dia: "Quinta-Feira 19:30, Semanal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Barão de Tatuí 94, Vila Buarque, SP",
+        lat: -23.5369042,
+        lng: -46.6533518
+      },
+      {
+        nome: "ESQUADRO E COMPASSO",
+        dia: "Terça-Feira 20, Semanal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Barão de Tatuí 94, Vila Buarque, SP",
+        lat: -23.5369042,
+        lng: -46.6533518
+      },
+      {
+        nome: "AURÉLIO DE SOUSA",
+        dia: "Quarta-Feira 20:00, Semanal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Barão de Tatuí 94, Vila Buarque, SP",
+        lat: -23.5369042,
+        lng: -46.6533518
+      },
+      {
+        nome: "19 DE NOVEMBRO",
+        dia: "Quinta-Feira 20:00, Semanal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Barão de Tatuí 94, Vila Buarque, SP",
+        lat: -23.5369042,
+        lng: -46.6533518
+      },
+      {
+        nome: "LIVRES PENSADORES",
+        dia: "Segunda-Feira 20, Semanal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Barão de Tatuí 94, Vila Buarque, SP",
+        lat: -23.5369042,
+        lng: -46.6533518
+      },
+      {
+        nome: "ARS RÉGIA",
+        dia: "Terça-Feira 20:00, Semanal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Barão de Tatuí 94, Vila Buarque, SP",
+        lat: -23.5369042,
+        lng: -46.6533518
+      },
+      {
+        nome: "21 DE MARÇO",
+        dia: "Segunda-Feira 20:00, Semanal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Barão de Tatuí 94, Vila Buarque, SP",
+        lat: -23.5369042,
+        lng: -46.6533518
+      },
+      {
+        nome: "SÃO PAULO DE PIRATININGA",
+        dia: "Sexta-Feira 1800, Mensal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Barão de Tatuí 94, Vila Buarque, SP",
+        lat: -23.5369042,
+        lng: -46.6533518
+      },
+      {
+        nome: "FRATERNIDADE ACADÊMICA JACQUES DEMOLAY",
+        dia: "Sábado 09:00, Quinzenal Par",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Barão de Tatuí 94, Vila Buarque, SP",
+        lat: -23.5369042,
+        lng: -46.6533518
+      },
+      {
+        nome: "PHOENIX",
+        dia: "Quinta-Feira 20, 1a/2a/4a/semana",
+        rito: "Rito Moderno",
+        enderecoTexto: "Rua Barão de Tatuí 94, apto 41, VILA Vila Buarque, SP",
+        lat: -23.5369042,
+        lng: -46.6533518
+      },
+      {
+        nome: "ESTRELA PAULISTANA",
+        dia: "Quarta-Feira 20:00, 2ª/4ª/Semana",
+        rito: "Rito Brasileiro",
+        enderecoTexto: "Rua Barão de Tatuí 94, Vila Buarque, SP",
+        lat: -23.5369042,
+        lng: -46.6533518
+      },
+      {
+        nome: "JUSTIÇA E DISCIPLINA",
+        dia: "Sexta-Feira 20:00, 4ª Semana",
+        rito: "Rito de York",
+        enderecoTexto: "Rua Barão de Tatuí 94, Vila Buarque, SP",
+        lat: -23.5369042,
+        lng: -46.6533518
+      },
+      {
+        nome: "CAVALEIROS DE AÇO - SÃO PAULO",
+        dia: "Segunda-Feira 20:00, 2a/4a/semana",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Barão de Tatuí 94, Vila Buarque, SP",
+        lat: -23.5369042,
+        lng: -46.6533518
+      },
+      {
+        nome: "ACÁCIA DO LESTE",
+        dia: "Segunda-Feira - 1ª/3ª - Quinzenal - 20:00	",
+        rito: "Rito de York",
+        enderecoTexto: "Rua Barão de Tatuí 94, Vila Buarque, SP",
+        lat: -23.5369042,
+        lng: -46.6533518
+      },
+      {
+        nome: "ELIYAHU GOLDRATT",
+        dia: "Sábado 17:00, Mensal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Barão de Tatuí 94, Vila Buarque, SP",
+        lat: -23.5369042,
+        lng: -46.6533518
+      },
+      {
+        nome: "TRADIÇÃO E EVOLUÇÃO",
+        dia: "Sexta-Feira 20:00, 4a/semana",
+        rito: "Rito Moderno",
+        enderecoTexto: "Rua Barão de Tatuí 94, Vila Buarque, SP",
+        lat: -23.5369042,
+        lng: -46.6533518
+      },
+      {
+        nome: "CALEDÔNIA",
+        dia: "Segunda-Feira 20:00, 3ª/semana",
+        rito: " Rito ",
+        enderecoTexto: "Rua Barão de Tatuí 94, Vila Buarque, SP",
+        lat: -23.5369042,
+        lng: -46.6533518
+      },
+      {
+        nome: "RENASCIMENTO DA ATLÂNTIDA",
+        dia: "Sexta-Feira 20:00, semanal",
+        rito: "Rito Escocês Antigo e Aceito	",
+        enderecoTexto: "Rua Barão de Tatuí 94, Vila Buarque, SP",
+        lat: -23.5369042,
+        lng: -46.6533518
+      },
+      {
+        nome: "MONTE SINAI",
+        dia: "Quarta-Feira 20:00, Semanal",
+        rito: "Rito Escocês Antigo e Aceito	",
+        enderecoTexto: "Rua Barão de Tatuí 94, Vila Buarque, SP",
+        lat: -23.5369042,
+        lng: -46.6533518
+	  },
+      {
+        nome: "MONTE LÍBANO",
+        dia: "Segunda-Feira 20:00, Semanal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Carneiro da Cunha 1193, Saúde, SP",
+        lat: -23.6225844,
+        lng: -46.6357301
+      },
+      {
+        nome: "EVERARDO DIAS",
+        dia: "Segunda-Feira 20:30, Semanal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Paulo Franco 270, Vila Hamburguesa, SP",
+        lat: -23.5328569,
+        lng: -46.7275726
+      },
+      {
+        nome: "ROBERTO CEZAR",
+        dia: "Sábado 10:00 - 2º/4º - Quinzenal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Barão de Tatuí 94, Vila Buarque, SP",
+        lat: -23.5369042,
+        lng: -46.6533518
+      },
+      {
+        nome: "RAFAEL LODUCA",
+        dia: "Terça-Feira 20:00, Semanal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Travessa Francisco Novo 48, Vila Manchester, SP",
+        lat: -23.5477774,
+        lng: -46.5305697
+      },
+      {
+        nome: "FRATERNIDADE DO LESTE",
+        dia: "Sábado 09:00, 1a/3a/semana",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Travessa Francisco Novo 48, apto 42, Vila Manchester, SP",
+        lat: -23.5477774,
+        lng: -46.5305697
+      },
+      {
+        nome: "HANUKIAH",
+        dia: "Quinta-Feira 20:00, Quinzenal Impar",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Travessa Francisco Novo 48, Vila Manchester, SP",
+        lat: -23.5477774,
+        lng: -46.5305697
+      },
+      {
+        nome: "COMÉRCIO E CIÊNCIAS",
+        dia: "Terça-Feira 20:00, Semanal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Aurora 544, Sobreloja 2º andar, República, SP",
+        lat: -23.5406864,
+        lng: -46.6413677
+      },
+      {
+        nome: "ARISTIDES FERREIRA",
+        dia: "Segunda-Feira 19:30, Semanal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Aurora 544, Sobreloja 2º andar, República, SP",
+        lat: -23.5406864,
+        lng: -46.6413677
+      },
+      {
+        nome: "DANYLO JOSÉ FERNANDES",
+        dia: "Quinta-Feira 20:00, Quinzenal Impar",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Dr. Olavo Egídio 185, Apto 41, Santana, SP",
+        lat: -23.4998833,
+        lng: -46.6239013
+      },
+      {
+        nome: "APÓSTOLOS PAULISTAS",
+        dia: "Segunda-Feira 20:00, 1a/2a/3a/semana",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Dr. Olavo Egídio 185, Santana, SP",
+        lat: -23.4998833,
+        lng: -46.6239013
+      },
+      {
+        nome: "IGUALDADE",
+        dia: "Quarta-Feira 20:00, Semanal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Dr. Olavo Egídio 185, Apto 124, Santana, SP",
+        lat: -23.4998833,
+        lng: -46.6239013
+      },
+      {
+        nome: "FERNANDO PESSOA - BRASIL",
+        dia: "Quarta-Feira 20:00, 1ª Semana",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Dr. Olavo Egídio 185, Santana, SP",
+        lat: -23.4998833,
+        lng: -46.6239013
+      },
+      {
+        nome: "FRATERNIDADE DE PINHEIROS",
+        dia: "Segunda-Feira 20:00, Semanal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Av. Ricardo Medina Filho 593, Vila Ipojuca, SP",
+        lat: -23.5336911,
+        lng: -46.7063724
+      },
+      {
+        nome: "TROLHA DA LAPA",
+        dia: "Segunda-Feira 20:30, 2a/3a/4a/semana",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Av. Mercedes 25, 5º Andar, Alto da Lapa, SP",
+        lat: -23.5208315,
+        lng: -46.7121317
+      },
+      {
+        nome: "ACÁCIA DA PAZ",
+        dia: "Quarta-Feira 20:00, Semanal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Lopes de Oliveira 297, Barra Funda, SP",
+        lat: -23.5302841,
+        lng: -46.653892
+      },
+      {
+        nome: "III MILÊNIO",
+        dia: "Quarta-Feira 20:00, Semanal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Saturnino dos Santos 325, Cursino, SP",
+        lat: -23.5975145,
+        lng: -46.6165038
+      },
+      {
+        nome: "ETERNO APRENDIZ",
+        dia: "Segunda-Feira 20:00, Semanal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Avenida Mazzei 1174, Vila Mazzei, SP",
+        lat: -23.4722018,
+        lng: -46.5997038
+      },
+      {
+        nome: "WALDEMAR PELLEGRINO",
+        dia: "Quarta-Feira 20H00, Quinzenal Par",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "R. Canuto Saraiva, 115 - Mooca, São Paulo - SP",
+        lat: -23.5598395,
+        lng: -46.6034745
+      },
+      {
+        nome: "CESARINO NALIN",
+        dia: "Terça-Feira 20:00, Semanal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Oswaldo Arouca, 409 - Vila Formosa, São Paulo - SP",
+        lat: -23.5617373,
+        lng: -46.5391103
+      },
+      {
+        nome: "FIDELITAS",
+        dia: "Sábado 09:30, 1ª Semana",
+        rito: "Rito de York",
+        enderecoTexto: "Rua Oswaldo Arouca, 409 - Vila Formosa, São Paulo - SP",
+        lat: -23.5617373,
+        lng: -46.5391103
+      },
+      {
+        nome: "SERVÍLIO DONINI - DCCCXVI",
+        dia: "Sábado 09:00, 2º Semana",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Oswaldo Arouca, 409 - Vila Formosa, São Paulo - SP",
+        lat: -23.5617373,
+        lng: -46.5391103
+      },
+      {
+        nome: "ALQUIMISTAS DA LUZ",
+        dia: "Terça-Feira 20:00, Semanal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "R. Dr. Rodrigo de Barros, 127 - Luz, São Paulo - SP",
+        lat: -23.529225,
+        lng: -46.6301753
+      },
+      {
+        nome: "JOSÉ CRYSPINIANO JUNQUEIRA",
+        dia: "Quarta-Feira 20:00, 1a/3a/semana",
+        rito: "Rito Moderno",
+        enderecoTexto: "R. Prof. José Landulfo, 138 - Parque Sonia, São Paulo - SP",
+        lat: -23.5988787,
+        lng: -46.6253481
+      },
+      {
+        nome: "JOSÉ MATTOS SILVA",
+        dia: "Quarta-Feira 20h00, Semanal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Av. Alberto Byington, 177 - Vila Maria, São Paulo - SP",
+        lat: -23.5106194,
+        lng: -46.5850147
+      },
+      {
+        nome: "VOLUNTÁRIOS DA PÁTRIA",
+        dia: "Terça-Feira 20:00, Semanal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "R. Major Caetano da Costa, 110 - Santana, São Paulo - SP",
+        lat: -23.5111504,
+        lng: -46.6273168
+      },
+      {
+        nome: "GUARDIÕES DA LIBERDADE",
+        dia: "Terça-Feira 20H00, 2a/4a/semana",
+        rito: "Rito de York",
+        enderecoTexto: "Rua Guaimbé, 192 - Mooca, São Paulo - SP",
+        lat: -23.5629527,
+        lng: -46.5936413
+      },
+      {
+        nome: "LUZ DO ORIENTE II",
+        dia: "Quinta-Feira 20:00, Semanal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "R. Mirandinha, 817 - Penha de França, São Paulo - SP",
+        lat: -23.5294751,
+        lng: -46.5358881
+      },
+      {
+        nome: "COLINA DA PENHA",
+        dia: "Quarta-Feira 20, Quinzenal Impar",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "R. Mirandinha, 817 - Penha de França, São Paulo - SP",
+        lat: -23.5294751,
+        lng: -46.5358881
+      },
+      {
+        nome: "LUZ, PAZ E JUSTIÇA",
+        dia: "Segunda-Feira 20:00, Semanal",
+        rito: "Rito Adonhiramita",
+        enderecoTexto: "Rua Ubatã, 2 - Cidade Dutra, São Paulo - SP",
+        lat: -23.7113383,
+        lng: -46.7020225
+      },
+      {
+        nome: "	LUZ, PAZ E HARMONIA",
+        dia: "Mensal - Segunda-Feira - 4ª Semana - 20:00",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "Rua Ubatã, 2 - Cidade Dutra, São Paulo - SP",
+        lat: -23.7113383,
+        lng: -46.7020225
+      },
+      {
+        nome: "ALPHA LUZ SIGMA",
+        dia: "Sexta-Feira 20:00, Mensal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "R. das Palmeiras, 103 - Vila Buarque, São Paulo - SP",
+        lat: -23.5380423,
+        lng: -46.6503031
+      },
+      {
+        nome: "CONSTRUTORES DA VIRTUDE",
+        dia: "Quarta-Feira 20:00, Semanal",
+        rito: "Rito Escocês Antigo e Aceito",
+        enderecoTexto: "R. Serra de Botucatu, 1376 - Vila Gomes Cardim, São Paulo - SP",
+        lat: -23.5419536,
+        lng: -46.5585149
+      },
+      {
+        nome: "TEMPO DE ESTUDOS",
+        dia: "Sábado 14:30, 1a/3a/semana",
+        rito: "Ritual de Emulação",
+        enderecoTexto: "R. Lisboa, 1120 - Pinheiros, São Paulo - SP",
+        lat: -23.5551514,
+        lng: -46.682799
+      },
+      {
+        nome: "VERDADEIROS AMIGOS",
+        dia: "Quinta-Feira 20:00, 2a/4a/semana",
+        rito: "Ritual de Emulação",
+        enderecoTexto: "Rua Brigadeiro Tobias 118, Sala 407, Centro, São Paulo - SP",
+        lat: -23.5469641,
+        lng: -46.6365672
+      },
+      {
+        nome: "FRATERNIDADE SÉTIMA",
+        dia: "Segunda-Feira 20:00, 2a/4a/semana	",
+        rito: "Rito Moderno",
+        enderecoTexto: "R. São Joaquim, 457 - 4º andar - Liberdade, São Paulo - SP",
+        lat: -23.5608918,
+        lng: -46.6344369
+      },
+      {
+        nome: "ESTRELA DE SÃO PAULO - DXX",
+        dia: "Segunda-Feira 20:00, Semanal",
+        rito: "Rito Escocês Antigo e Aceito	",
+        enderecoTexto: "R. Jandaia, 150 - Bela Vista, São Paulo - SP",
+        lat: -23.5549326,
+        lng: -46.638024
+      },
+      {
+        nome: "FRATERNIDADE ITAQUERA",
+        dia: "Segunda-Feira 20:00, Mensal",
+        rito: "Rito Escocês Antigo e Aceito	",
+        enderecoTexto: "R. Barros Cassal, 165 - Itaquera, São Paulo - SP",
+        lat: -23.5399574,
+        lng: -46.4551743
+      },
+      {
+        nome: "COLUNAS DE SÃO JOÃO BATISTA",
+        dia: "Quinzenal - Quartas-Feiras - 1ª/3ª - 20:00",
+        rito: "Rito Escocês Antigo e Aceito	",
+        enderecoTexto: "Av. Cap. José Parada Gonçalves, 224 - Parque Mandaqui, São Paulo - SP",
+        lat: -23.4675644,
+        lng: -46.6303762
+       }
+    ];
+
+    const searchInput = document.getElementById('searchInput');
+    const lojasContainer = document.getElementById('lojasContainer');
+
+    function criarCard(loja) {
+      const enderecoGoogle = encodeURIComponent(loja.enderecoTexto);
+      const lat = loja.lat;
+      const lng = loja.lng;
+
+      return `
+        <div class="loja-card">
+          <h2>${loja.nome}</h2>
+          <p><strong>Dia da Sessão:</strong> ${loja.dia}</p>
+          <p><strong>Rito:</strong> ${loja.rito}</p>
+          <p><strong>Endereço:</strong> ${loja.enderecoTexto}</p>
+          <iframe 
+            src="https://www.google.com/maps?q=${enderecoGoogle}&output=embed" 
+            allowfullscreen 
+            loading="lazy"></iframe>
+          <div class="buttons-container">
+            <a 
+              class="gps-button" 
+              href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}" 
+              target="_blank"
+              rel="noopener noreferrer"
+            >Ir Maps</a>
+            <a 
+              class="gps-button waze-button" 
+              href="https://waze.com/ul?ll=${lat},${lng}&navigate=yes" 
+              target="_blank"
+              rel="noopener noreferrer"
+            >Ir Waze</a>
+          </div>
+        </div>
+      `;
+    }
+
+    function mostrarLojas() {
+      const termoBusca = searchInput.value.toLowerCase();
+      const lojasFiltradas = lojas.filter(loja =>
+        loja.nome.toLowerCase().includes(termoBusca) ||
+        loja.enderecoTexto.toLowerCase().includes(termoBusca) ||
+        loja.dia.toLowerCase().includes(termoBusca) ||
+        loja.rito.toLowerCase().includes(termoBusca)
+      );
+
+      if (lojasFiltradas.length === 0) {
+        lojasContainer.innerHTML = "<p style='text-align:center;'>Nenhuma loja encontrada.</p>";
+      } else {
+        lojasContainer.innerHTML = lojasFiltradas.map(criarCard).join('');
+      }
+    }
+
+    mostrarLojas();
+  </script>
+
+</body>
+</html>
