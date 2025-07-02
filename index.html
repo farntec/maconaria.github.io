@@ -130,24 +130,10 @@
       color: #27ae60 !important;
     }
 
-    @media (max-width: 600px) {
-      .loja-card iframe {
-        height: 200px;
-      }
-      .gps-button {
-        width: 45%;
-        font-size: 14px;
-        min-width: auto;
-      }
-      .buttons-container {
-        gap: 10px;
-      }
-    }
-
     /* Botão fixo do WhatsApp no canto inferior direito */
     #whatsapp-float-button {
       position: fixed;
-      bottom: 70px; /* 70px para ficar acima da barra fixa inferior que está a 60px */
+      bottom: 70px; /* acima da barra fixa inferior de 60px */
       right: 20px;
       background-color: #25D366;
       width: 56px;
@@ -168,6 +154,34 @@
       fill: white;
       width: 28px;
       height: 28px;
+    }
+
+    /* Responsivo para telas menores */
+    @media (max-width: 600px) {
+      .loja-card iframe {
+        height: 200px;
+      }
+      .buttons-container {
+        flex-wrap: nowrap;
+        justify-content: center;
+        gap: 10px;
+      }
+      .gps-button, .waze-button {
+        min-width: auto;
+        width: 48%;
+        font-size: 14px;
+        padding: 10px 0;
+      }
+      #whatsapp-float-button {
+        width: 48px;
+        height: 48px;
+        bottom: 70px;
+        right: 15px;
+      }
+      #whatsapp-float-button .whatsapp-icon {
+        width: 24px;
+        height: 24px;
+      }
     }
   </style>
 </head>
