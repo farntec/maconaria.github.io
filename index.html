@@ -66,7 +66,9 @@
       font-size: 16px;
       cursor: pointer;
       text-decoration: none;
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
       transition: background-color 0.3s ease;
       min-width: 120px;
       text-align: center;
@@ -79,6 +81,20 @@
     }
     .waze-button:hover {
       background-color: #1c86ee;
+    }
+    .whatsapp-button {
+      background-color: #25D366;
+    }
+    .whatsapp-button:hover {
+      background-color: #1da851;
+    }
+    /* Ícone do WhatsApp */
+    .whatsapp-icon {
+      width: 20px;
+      height: 20px;
+      fill: white;
+      display: inline-block;
+      vertical-align: middle;
     }
     .footer {
       position: fixed;
@@ -127,6 +143,32 @@
         gap: 10px;
       }
     }
+
+    /* Botão fixo do WhatsApp no canto inferior direito */
+    #whatsapp-float-button {
+      position: fixed;
+      bottom: 70px; /* 70px para ficar acima da barra fixa inferior que está a 60px */
+      right: 20px;
+      background-color: #25D366;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-decoration: none;
+      z-index: 1000;
+      transition: background-color 0.3s ease;
+    }
+    #whatsapp-float-button:hover {
+      background-color: #1DA851;
+    }
+    #whatsapp-float-button .whatsapp-icon {
+      fill: white;
+      width: 28px;
+      height: 28px;
+    }
   </style>
 </head>
 <body>
@@ -140,6 +182,19 @@
   <div class="footer">
     <button id="btnCopiarPix">Que tal nos apoiar? Contribua via Pix clicando Aqui</button>
   </div>
+
+  <!-- Botão fixo do WhatsApp no canto inferior direito -->
+  <a 
+    href="https://wa.me/5511963044359?text=Vim%20Pelo%20site%20Mapa%20Lojas%20Maçônicas" 
+    target="_blank" 
+    rel="noopener noreferrer" 
+    id="whatsapp-float-button"
+    aria-label="Enviar mensagem no WhatsApp"
+  >
+    <svg class="whatsapp-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20.52 3.48A11.83 11.83 0 0012 0C5.372 0 .05 5.324.05 12c0 2.11.55 4.16 1.6 5.97L0 24l6.27-1.65A11.92 11.92 0 0012 24c6.627 0 12-5.372 12-12 0-3.2-1.25-6.2-3.48-8.52zm-8.43 17.23a9.45 9.45 0 01-4.77-1.35l-.34-.2-3.72.98.99-3.63-.21-.37a9.5 9.5 0 011.38-11.67 9.53 9.53 0 0112.67 0 9.5 9.5 0 010 13.43 9.43 9.43 0 01-6.77 2.4zm5.5-7.18c-.3-.15-1.77-.88-2.05-.98-.28-.1-.48-.15-.68.15s-.78.97-.95 1.17c-.17.2-.35.22-.65.08a6.68 6.68 0 01-1.96-1.14 7.25 7.25 0 01-1.34-1.66c-.14-.24 0-.37.11-.52.11-.15.25-.37.37-.56.12-.18.16-.3.25-.5.08-.17.04-.3-.02-.44-.07-.15-.68-1.65-.93-2.27-.24-.6-.49-.52-.68-.53l-.58-.01c-.2 0-.52.07-.8.37s-1.05 1.02-1.05 2.49 1.08 2.89 1.23 3.1c.15.2 2.12 3.22 5.13 4.52.72.31 1.28.5 1.72.64.72.22 1.38.19 1.9.12.58-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.18-1.42-.07-.12-.27-.2-.57-.35z"/>
+    </svg>
+  </a>
 
   <script>
     const lojas = [
