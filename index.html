@@ -90,14 +90,30 @@
       padding: 15px 0;
       font-size: 16px;
     }
-    .footer a {
-      color: #1e90ff;
-      text-decoration: none;
+    .footer button {
+      background: none;
+      border: none;
+      color: #FFD700;
       font-weight: bold;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 0;
+      transition: color 0.3s ease;
     }
-    .footer a:hover {
+    .footer button:hover {
       text-decoration: underline;
     }
+
+    /* Animação para o texto verde piscando lentamente */
+    @keyframes piscarVerde {
+      0%, 100% { color: #27ae60; opacity: 1; }
+      50% { color: #27ae60; opacity: 0.3; }
+    }
+    .piscar-verde {
+      animation: piscarVerde 1.5s ease-in-out infinite;
+      color: #27ae60 !important;
+    }
+
     @media (max-width: 600px) {
       .loja-card iframe {
         height: 200px;
@@ -122,7 +138,7 @@
   <div id="lojasContainer"></div>
 
   <div class="footer">
-    Criado por <a href="" rel="noopener noreferrer">Se este serviço foi útil, contribua via Pix clicando aqui.</a>
+    <button id="btnCopiarPix">O Serviço Foi Útil? Contribua Via Pix Copie Chave Aqui</button>
   </div>
 
   <script>
@@ -814,6 +830,64 @@
     }
 
     mostrarLojas();
+
+    // Função para copiar a chave Pix, tentando Clipboard API e fallback para execCommand
+    const btnCopiarPix = document.getElementById('btnCopiarPix');
+
+    btnCopiarPix.addEventListener('click', function(event) {
+      event.preventDefault();
+      const chavePix = '11963044359';
+
+      function fallbackCopyTextToClipboard(text) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        // Evita scroll na página
+        textArea.style.position = "fixed";
+        textArea.style.top = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        let successful = false;
+        try {
+          successful = document.execCommand('copy');
+        } catch (err) {
+          successful = false;
+        }
+
+        document.body.removeChild(textArea);
+        return successful;
+      }
+
+      function mostrarMensagemSucesso() {
+        btnCopiarPix.textContent = 'Chave Pix Copiada! Obrigado TFA!';
+        btnCopiarPix.classList.add('piscar-verde');
+        setTimeout(() => {
+          btnCopiarPix.textContent = 'O Serviço Foi Útil? Contribua Via Pix Copie Chave Aqui';
+          btnCopiarPix.classList.remove('piscar-verde');
+        }, 7000);
+      }
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(chavePix).then(() => {
+          mostrarMensagemSucesso();
+        }).catch(() => {
+          // fallback se Clipboard API falhar
+          if (fallbackCopyTextToClipboard(chavePix)) {
+            mostrarMensagemSucesso();
+          } else {
+            alert('Erro ao copiar automaticamente, copie manualmente: ' + chavePix);
+          }
+        });
+      } else {
+        // fallback se Clipboard API não suportada
+        if (fallbackCopyTextToClipboard(chavePix)) {
+          mostrarMensagemSucesso();
+        } else {
+          alert('Seu navegador não suporta cópia automática, copie manualmente: ' + chavePix);
+        }
+      }
+    });
   </script>
 
 </body>
