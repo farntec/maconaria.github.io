@@ -1,1013 +1,187 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mapa de Lojas Maçônicas</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 0;
-      padding-bottom: 60px; /* Espaço para o rodapé fixo */
+      padding-bottom: 80px;
       background-color: #f4f4f4;
     }
+
     h1 {
-      background-color: #2c3e50;
-      color: white;
-      padding: 20px 0;
       text-align: center;
-      margin-bottom: 20px;
+      margin-top: 20px;
     }
+
     #searchInput {
-      padding: 12px;
-      font-size: 16px;
-      width: 90%;
-      max-width: 400px;
       display: block;
-      margin: 0 auto 20px auto;
-      border-radius: 8px;
+      margin: 20px auto;
+      padding: 10px;
+      width: 80%;
+      max-width: 400px;
+      border-radius: 5px;
       border: 1px solid #ccc;
     }
-    .loja-card {
+
+    .loja {
       background-color: white;
-      margin: 20px auto;
-      padding: 20px;
+      margin: 10px;
+      padding: 15px;
       border-radius: 10px;
-      max-width: 600px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
-    .loja-card h2 {
-      margin-top: 0;
-      color: #2c3e50;
-    }
-    .loja-card p {
-      margin: 5px 0;
-      font-size: 16px;
-    }
-    .loja-card iframe {
-      width: 100%;
-      height: 300px;
-      border: none;
-      border-radius: 10px;
-      margin-bottom: 15px;
-    }
-    .buttons-container {
+
+    .botoes-fixos {
+      position: fixed;
+      bottom: 70px;
+      right: 20px;
       display: flex;
-      justify-content: center;
-      gap: 15px;
-      flex-wrap: wrap;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 999;
     }
-    .gps-button {
-      padding: 8px 16px;
-      background-color: #27ae60;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      text-decoration: none;
+
+    .botoes-fixos a {
       display: flex;
-      justify-content: center;
       align-items: center;
-      gap: 6px;
-      transition: background-color 0.3s ease;
-      min-width: 110px;
-      text-align: center;
-      box-sizing: border-box;
+      justify-content: center;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      color: white;
+      text-decoration: none;
+      font-size: 24px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
     }
-    .gps-button:hover {
-      background-color: #219150;
+
+    .whatsapp {
+      background-color: #25d366;
     }
-    .waze-button {
-      background-color: #1e90ff;
+
+    .maps {
+      background-color: #4285f4;
     }
-    .waze-button:hover {
-      background-color: #1c86ee;
+
+    .waze {
+      background-color: #2d89ef;
     }
-    .whatsapp-button {
-      background-color: #25D366;
-    }
-    .whatsapp-button:hover {
-      background-color: #1da851;
-    }
-    /* Ícone do WhatsApp */
-    .whatsapp-icon {
-      width: 20px;
-      height: 20px;
-      fill: white;
-      display: inline-block;
-      vertical-align: middle;
-    }
-    .footer {
+
+    /* Rodapé fixo */
+    footer {
       position: fixed;
       bottom: 0;
       width: 100%;
-      background-color: #2c3e50;
+      background-color: #333;
       color: white;
       text-align: center;
-      padding: 15px 0;
-      font-size: 16px;
+      padding: 10px;
     }
-    .footer button {
-      background: none;
-      border: none;
-      color: #FFD700;
-      font-weight: bold;
+
+    /* Imagem Mapa */
+    .mapa-imagem {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .mapa-imagem img {
+      max-width: 90%;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
       cursor: pointer;
-      font-size: 16px;
-      padding: 0;
-      transition: color 0.3s ease;
-    }
-    .footer button:hover {
-      text-decoration: underline;
-    }
-
-    /* Animação para o texto verde piscando lentamente */
-    @keyframes piscarVerde {
-      0%, 100% { color: #27ae60; opacity: 1; }
-      50% { color: #27ae60; opacity: 0.3; }
-    }
-    .piscar-verde {
-      animation: piscarVerde 1.5s ease-in-out infinite;
-      color: #27ae60 !important;
-    }
-
-    /* Botão fixo do WhatsApp no canto inferior direito */
-    #whatsapp-float-button {
-      position: fixed;
-      bottom: 70px; /* acima da barra fixa inferior de 60px */
-      right: 20px;
-      background-color: #25D366;
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-decoration: none;
-      z-index: 1000;
-      transition: background-color 0.3s ease;
-    }
-    #whatsapp-float-button:hover {
-      background-color: #1DA851;
-    }
-    #whatsapp-float-button .whatsapp-icon {
-      fill: white;
-      width: 28px;
-      height: 28px;
-    }
-
-    /* Responsivo para telas menores */
-    @media (max-width: 600px) {
-      .loja-card iframe {
-        height: 200px;
-      }
-      .buttons-container {
-        flex-wrap: nowrap;
-        justify-content: center;
-        gap: 10px;
-      }
-      .gps-button, .waze-button {
-        min-width: auto;
-        width: 48%;
-        font-size: 14px;
-        padding: 10px 0;
-      }
-      #whatsapp-float-button {
-        width: 48px;
-        height: 48px;
-        bottom: 70px;
-        right: 15px;
-      }
-      #whatsapp-float-button .whatsapp-icon {
-        width: 24px;
-        height: 24px;
-      }
     }
   </style>
 </head>
+
 <body>
 
   <h1>Mapa Lojas Maçônicas</h1>
 
-  <input type="text" id="searchInput" placeholder="Buscar por loja, endereço, bairro, dia, rito..." oninput="mostrarLojas()">
-
-  <div id="lojasContainer"></div>
-
-  <div class="footer">
-    <button id="btnCopiarPix">Que tal nos apoiar? Contribua via Pix clicando Aqui</button>
+  <!-- Imagem Miniatura com Link -->
+  <div class="mapa-imagem">
+    <a href="https://www.lojasmaconicas.netlify.app" target="_blank" rel="noopener noreferrer">
+      <img src="MAPA_LOJAS_LACONICAS.png" alt="Mapa Lojas Maçônicas">
+    </a>
+    <p>Clique na imagem para visualizar o mapa completo</p>
   </div>
 
-  <!-- Botão fixo do WhatsApp no canto inferior direito -->
-  <a 
-    href="https://wa.me/5511963044359?text=Vim%20Pelo%20site%20Mapa%20Lojas%20Maçônicas" 
-    target="_blank" 
-    rel="noopener noreferrer" 
-    id="whatsapp-float-button"
-    aria-label="Enviar mensagem no WhatsApp"
-  >
-    <svg class="whatsapp-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path d="M20.52 3.48A11.83 11.83 0 0012 0C5.372 0 .05 5.324.05 12c0 2.11.55 4.16 1.6 5.97L0 24l6.27-1.65A11.92 11.92 0 0012 24c6.627 0 12-5.372 12-12 0-3.2-1.25-6.2-3.48-8.52zm-8.43 17.23a9.45 9.45 0 01-4.77-1.35l-.34-.2-3.72.98.99-3.63-.21-.37a9.5 9.5 0 011.38-11.67 9.53 9.53 0 0112.67 0 9.5 9.5 0 010 13.43 9.43 9.43 0 01-6.77 2.4zm5.5-7.18c-.3-.15-1.77-.88-2.05-.98-.28-.1-.48-.15-.68.15s-.78.97-.95 1.17c-.17.2-.35.22-.65.08a6.68 6.68 0 01-1.96-1.14 7.25 7.25 0 01-1.34-1.66c-.14-.24 0-.37.11-.52.11-.15.25-.37.37-.56.12-.18.16-.3.25-.5.08-.17.04-.3-.02-.44-.07-.15-.68-1.65-.93-2.27-.24-.6-.49-.52-.68-.53l-.58-.01c-.2 0-.52.07-.8.37s-1.05 1.02-1.05 2.49 1.08 2.89 1.23 3.1c.15.2 2.12 3.22 5.13 4.52.72.31 1.28.5 1.72.64.72.22 1.38.19 1.9.12.58-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.18-1.42-.07-.12-.27-.2-.57-.35z"/>
-    </svg>
-  </a>
+  <input type="text" id="searchInput" placeholder="Buscar por loja, endereço, bairro, dia, rito..." oninput="mostrarLojas()">
+
+  <div id="lojasContainer">
+    <!-- Aqui será exibida a lista filtrada -->
+  </div>
+
+  <!-- Botões Fixos -->
+  <div class="botoes-fixos">
+    <a class="whatsapp" href="https://wa.me/5511963044359?text=Vim%20pelo%20site%20Mapa%20Lojas%20Maçônicas" target="_blank" title="WhatsApp">&#x1F4AC;</a>
+    <a class="maps" href="https://www.google.com/maps" target="_blank" title="Abrir no Google Maps">&#x1F5FA;</a>
+    <a class="waze" href="https://www.waze.com/ul" target="_blank" title="Abrir no Waze">&#x1F699;</a>
+  </div>
+
+  <footer>
+    O serviço foi útil? Contribua via Pix: 11963044359 - <a href="#" onclick="copiarChavePix()" style="color: #00ff00;">Copiar chave</a>
+    <span id="mensagemPix" style="margin-left: 10px;"></span>
+  </footer>
 
   <script>
     const lojas = [
-      {
-        nome: "GUARDIÕES DO SANGREAL 435 P/GOP",
-        dia: "Segunda-Feira 19:30, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "Av. das Cerejeiras, 40 - Jardim Japao, São Paulo - SP",
-        lat: -23.5144691,
-        lng: -46.5819698
-      },
-      {
-        nome: "ETERNOS CONSTRUTORES 414 P/GOP",
-        dia: "Quarta-Feira 20:00, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "Av. das Cerejeiras, 40 - Jardim Japao, São Paulo - SP",
-        lat: -23.5144691,
-        lng: -46.5819698
-      },
-      {
-        nome: "CONDE DE GRASSE TILLY 301 P/GOP",
-        dia: "Sábado 9:00H, Mensal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "Av. das Cerejeiras, 40 - Jardim Japao, São Paulo - SP",
-        lat: -23.5144691,
-        lng: -46.5819698
-      },
-      {
-        nome: "XX DE SETEMBRO 20 P/GOP - Sobreloja 3",
-        dia: "Segunda-Feira 20:00, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Helvetia, 557 - Campos Eliseos, São Paulo - SP",
-        lat: -23.5359224,
-        lng: -46.6457626
-      },
-      {
-        nome: "MONTE REAL 144 P/GOP - Sobreloja",
-        dia: "Terça-Feira 20:00, 2a/4a/semana",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Helvetia, 557 - Campos Eliseos, São Paulo - SP",
-        lat: -23.5359224,
-        lng: -46.6457626
-      },
-      {
-        nome: "PHOENIX LUCEM 412 P/GOP - Sobreloja 3",
-        dia: "Sábado 10:00, 2a/4a/semana",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Helvetia, 557 - Campos Eliseos, São Paulo - SP",
-        lat: -23.5359224,
-        lng: -46.6457626
-      },
-      {
-        nome: "QUATUOR CORONATI, NELSON GARÇEZ 425 P/GOP - Sobreloja 3",
-        dia: "Quinta-Feira 20:00, 3a Semana",
-        rito: "Ritual de Emulação",
-        enderecoTexto: "R. Helvetia, 557 - Campos Eliseos, São Paulo - SP",
-        lat: -23.5359224,
-        lng: -46.6457626
-      },
-      {
-        nome: "MONTE HEBRON 441 P/GOP - Sala 3",
-        dia: "Terça-Feira 20:00, Semestral",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Helvetia, 557 - Campos Eliseos, São Paulo - SP",
-        lat: -23.5359224,
-        lng: -46.6457626
-      },
-      {
-        nome: "VIGILANTES 34 P/GOP",
-        dia: "Quarta-Feira 20:00, 1a/2a/3a/semana",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Bárbara Heliodora, 307 - Pompéia, São Paulo - SP",
-        lat: -23.5329794,
-        lng: -46.6937627
-      },
-      {
-        nome: "EVOLUÇÃO III 35 P/GOP",
-        dia: "Quinta-Feira 19:30, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Barão de Tatuí, 94 - Vila Buarque, São Paulo - SP",
-        lat: -23.5369042,
-        lng: -46.6533518
-      },
-      {
-        nome: "ESQUADRO E COMPASSO 66 P/GOP",
-        dia: "Terça-Feira 20, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Barão de Tatuí, 94 - Vila Buarque, São Paulo - SP",
-        lat: -23.5369042,
-        lng: -46.6533518
-      },
-      {
-        nome: "AURÉLIO DE SOUSA 88 P/GOP",
-        dia: "Quarta-Feira 20:00, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Barão de Tatuí, 94 - Vila Buarque, São Paulo - SP",
-        lat: -23.5369042,
-        lng: -46.6533518
-      },
-      {
-        nome: "19 DE NOVEMBRO 145 P/GOP",
-        dia: "Quinta-Feira 20:00, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Barão de Tatuí, 94 - Vila Buarque, São Paulo - SP",
-        lat: -23.5369042,
-        lng: -46.6533518
-      },
-      {
-        nome: "LIVRES PENSADORES 160 P/GOP",
-        dia: "Segunda-Feira 20, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Barão de Tatuí, 94 - Vila Buarque, São Paulo - SP",
-        lat: -23.5369042,
-        lng: -46.6533518
-      },
-      {
-        nome: "ARS RÉGIA 183 P/GOP",
-        dia: "Terça-Feira 20:00, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Barão de Tatuí, 94 - Vila Buarque, São Paulo - SP",
-        lat: -23.5369042,
-        lng: -46.6533518
-      },
-      {
-        nome: "21 DE MARÇO 190 P/GOP",
-        dia: "Segunda-Feira 20:00, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Barão de Tatuí, 94 - Vila Buarque, São Paulo - SP",
-        lat: -23.5369042,
-        lng: -46.6533518
-      },
-      {
-        nome: "SÃO PAULO DE PIRATININGA 250 P/GOP",
-        dia: "Sexta-Feira 1800, Mensal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Barão de Tatuí, 94 - Vila Buarque, São Paulo - SP",
-        lat: -23.5369042,
-        lng: -46.6533518
-      },
-      {
-        nome: "FRATERNIDADE ACADÊMICA JACQUES DEMOLAY 267 P/GOP",
-        dia: "Sábado 09:00, Quinzenal Par",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Barão de Tatuí, 94 - Vila Buarque, São Paulo - SP",
-        lat: -23.5369042,
-        lng: -46.6533518
-      },
-      {
-        nome: "PHOENIX 275 P/GOP",
-        dia: "Quinta-Feira 20, 1a/2a/4a/semana",
-        rito: "Rito Moderno",
-        enderecoTexto: "R. Barão de Tatuí, 94 - Vila Buarque, São Paulo - SP",
-        lat: -23.5369042,
-        lng: -46.6533518
-      },
-      {
-        nome: "ESTRELA PAULISTANA 316 P/GOP",
-        dia: "Quarta-Feira 20:00, 2ª/4ª/Semana",
-        rito: "Rito Brasileiro",
-        enderecoTexto: "R. Barão de Tatuí, 94 - Vila Buarque, São Paulo - SP",
-        lat: -23.5369042,
-        lng: -46.6533518
-      },
-      {
-        nome: "JUSTIÇA E DISCIPLINA 349 P/GOP",
-        dia: "Sexta-Feira 20:00, 4ª Semana",
-        rito: "Rito de York",
-        enderecoTexto: "R. Barão de Tatuí, 94 - Vila Buarque, São Paulo - SP",
-        lat: -23.5369042,
-        lng: -46.6533518
-      },
-      {
-        nome: "CAVALEIROS DE AÇO - SÃO PAULO 413 P/GOP",
-        dia: "Segunda-Feira 20:00, 2a/4a/semana",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Barão de Tatuí, 94 - Vila Buarque, São Paulo - SP",
-        lat: -23.5369042,
-        lng: -46.6533518
-      },
-      {
-        nome: "ACÁCIA DO LESTE 424 P/GOP",
-        dia: "Segunda-Feira - 1ª/3ª - Quinzenal - 20:00	",
-        rito: "Rito de York",
-        enderecoTexto: "R. Barão de Tatuí, 94 - Vila Buarque, São Paulo - SP",
-        lat: -23.5369042,
-        lng: -46.6533518
-      },
-      {
-        nome: "ELIYAHU GOLDRATT 427 P/GOP",
-        dia: "Sábado 17:00, Mensal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Barão de Tatuí, 94 - Vila Buarque, São Paulo - SP",
-        lat: -23.5369042,
-        lng: -46.6533518
-      },
-      {
-        nome: "TRADIÇÃO E EVOLUÇÃO 454 P/GOP",
-        dia: "Sexta-Feira 20:00, 4a/semana",
-        rito: "Rito Moderno",
-        enderecoTexto: "R. Barão de Tatuí, 94 - Vila Buarque, São Paulo - SP",
-        lat: -23.5369042,
-        lng: -46.6533518
-      },
-      {
-        nome: "CALEDÔNIA 465 P/GOP",
-        dia: "Segunda-Feira 20:00, 3ª/semana",
-        rito: " Rito ",
-        enderecoTexto: "R. Barão de Tatuí, 94 - Vila Buarque, São Paulo - SP",
-        lat: -23.5369042,
-        lng: -46.6533518
-      },
-      {
-        nome: "RENASCIMENTO DA ATLÂNTIDA 159 P/GOP",
-        dia: "Sexta-Feira 20:00, semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Barão de Tatuí, 94 - Vila Buarque, São Paulo - SP",
-        lat: -23.5369042,
-        lng: -46.6533518
-      },
-      {
-        nome: "MONTE SINAI 224 P/GOP",
-        dia: "Quarta-Feira 20:00, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Barão de Tatuí, 94 - Vila Buarque, São Paulo - SP",
-        lat: -23.5369042,
-        lng: -46.6533518
-	  },
-      {
-        nome: "MONTE LÍBANO 79 P/GOP",
-        dia: "Segunda-Feira 20:00, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Carneiro da Cunha, 1193 - Saúde, São Paulo - SP",
-        lat: -23.6225844,
-        lng: -46.6357301
-      },
-      {
-        nome: "EVERARDO DIAS 85 P/GOP",
-        dia: "Segunda-Feira 20:30, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Paulo Franco, 270 - Vila Hamburguesa, São Paulo - SP",
-        lat: -23.5328569,
-        lng: -46.7275726
-      },
-      {
-        nome: "ROBERTO CEZAR 298 P/GOP",
-        dia: "Sábado 10:00 - 2º/4º - Quinzenal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Paulo Franco, 270 - Vila Hamburguesa, São Paulo - SP",
-        lat: -23.5328569,
-        lng: -46.7275726
-      },
-      {
-        nome: "RAFAEL LODUCA 86 P/GOP",
-        dia: "Terça-Feira 20:00, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "Tv. Francisco Novo, 48 - Vila Nova Manchester, São Paulo - SP",
-        lat: -23.5477774,
-        lng: -46.5305697
-      },
-      {
-        nome: "FRATERNIDADE DO LESTE 374 P/GOP",
-        dia: "Sábado 09:00, 1a/3a/semana",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "Tv. Francisco Novo, 48 - Vila Nova Manchester, São Paulo - SP",
-        lat: -23.5477774,
-        lng: -46.5305697
-      },
-      {
-        nome: "HANUKIAH 438 P/GOP",
-        dia: "Quinta-Feira 20:00, Quinzenal Impar",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "Tv. Francisco Novo, 48 - Vila Nova Manchester, São Paulo - SP",
-        lat: -23.5477774,
-        lng: -46.5305697
-      },
-      {
-        nome: "COMÉRCIO E CIÊNCIAS 87 P/GOP - Sobreloja 2º andar",
-        dia: "Terça-Feira 20:00, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Aurora, 544 - Santa Ifigênia, São Paulo - SP",
-        lat: -23.5406864,
-        lng: -46.6413677
-      },
-      {
-        nome: "ARISTIDES FERREIRA 329 P/GOP - Sobreloja 2º andar",
-        dia: "Segunda-Feira 19:30, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Aurora, 544 - Santa Ifigênia, São Paulo - SP",
-        lat: -23.5406864,
-        lng: -46.6413677
-      },
-      {
-        nome: "DANYLO JOSÉ FERNANDES 90 P/GOP - Apto 41",
-        dia: "Quinta-Feira 20:00, Quinzenal Impar",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "Rua Dr. Olavo Egídio, 185 - Santana, São Paulo - SP,",
-        lat: -23.4998833,
-        lng: -46.6239013
-      },
-      {
-        nome: "APÓSTOLOS PAULISTAS 91 P/GOP",
-        dia: "Segunda-Feira 20:00, 1a/2a/3a/semana",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "Rua Dr. Olavo Egídio, 185 - Santana, São Paulo - SP,",
-        lat: -23.4998833,
-        lng: -46.6239013
-      },
-      {
-        nome: "IGUALDADE 119 P/GOP - Apto 124",
-        dia: "Quarta-Feira 20:00, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "Rua Dr. Olavo Egídio, 185 - Santana, São Paulo - SP,",
-        lat: -23.4998833,
-        lng: -46.6239013
-      },
-      {
-        nome: "FERNANDO PESSOA BRASIL 310 P/GOP",
-        dia: "Quarta-Feira 20:00, 1ª Semana",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "Rua Dr. Olavo Egídio, 185 - Santana, São Paulo - SP,",
-        lat: -23.4998833,
-        lng: -46.6239013
-      },
-      {
-        nome: "FRATERNIDADE DE PINHEIROS 103 P/GOP",
-        dia: "Segunda-Feira 20:00, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "Av. Ricardo Medina Filho, 593 - Vila Ipojuca, São Paulo - SP",
-        lat: -23.5336911,
-        lng: -46.7063724
-      },
-      {
-        nome: "TROLHA DA LAPA 111 P/GOP",
-        dia: "Segunda-Feira 20:30, 2a/3a/4a/semana",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "Av. Mercedes, 25 - Alto da Lapa, São Paulo - SP",
-        lat: -23.5208315,
-        lng: -46.7121317
-      },
-      {
-        nome: "ACÁCIA DA PAZ 121 P/GOP",
-        dia: "Quarta-Feira 20:00, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Lopes de Oliveira, 297 - Barra Funda, São Paulo - SP",
-        lat: -23.5302841,
-        lng: -46.653892
-      },
-      {
-        nome: "III MILÊNIO 246 P/GOP",
-        dia: "Quarta-Feira 20:00, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Saturnino dos Santos, 325 - Cursino, São Paulo - SP",
-        lat: -23.5975145,
-        lng: -46.6165038
-      },
-      {
-        nome: "ETERNO APRENDIZ 253 P/GOP",
-        dia: "Segunda-Feira 20:00, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "Av. Mazzei, 1174 - Vila Mazzei, São Paulo - SP",
-        lat: -23.4722018,
-        lng: -46.5997038
-      },
-      {
-        nome: "WALDEMAR PELLEGRINO 255 P/GOP",
-        dia: "Quarta-Feira 20H00, Quinzenal Par",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Canuto Saraiva, 115 - Mooca, São Paulo - SP",
-        lat: -23.5598395,
-        lng: -46.6034745
-      },
-      {
-        nome: "CESARINO NALIN 257 P/GOP",
-        dia: "Terça-Feira 20:00, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Oswaldo Arouca, 409 - Vila Formosa, São Paulo - SP",
-        lat: -23.5617373,
-        lng: -46.5391103
-      },
-      {
-        nome: "FIDELITAS 409 P/GOP",
-        dia: "Sábado 09:30, 1ª Semana",
-        rito: "Rito de York",
-        enderecoTexto: "R. Oswaldo Arouca, 409 - Vila Formosa, São Paulo - SP",
-        lat: -23.5617373,
-        lng: -46.5391103
-      },
-      {
-        nome: "SERVÍLIO DONINI DCCCXVI 434 P/GOP",
-        dia: "Sábado 09:00, 2º Semana",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Oswaldo Arouca, 409 - Vila Formosa, São Paulo - SP",
-        lat: -23.5617373,
-        lng: -46.5391103
-      },
-      {
-        nome: "ALQUIMISTAS DA LUZ 269 P/GOP",
-        dia: "Terça-Feira 20:00, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Dr. Rodrigo de Barros, 127 - Luz, São Paulo - SP",
-        lat: -23.529225,
-        lng: -46.6301753
-      },
-      {
-        nome: "JOSÉ CRYSPINIANO JUNQUEIRA 271 P/GOP",
-        dia: "Quarta-Feira 20:00, 1a/3a/semana",
-        rito: "Rito Moderno",
-        enderecoTexto: "R. Prof. José Landulfo, 138 - Parque Sonia, São Paulo - SP",
-        lat: -23.5988787,
-        lng: -46.6253481
-      },
-      {
-        nome: "JOSÉ MATTOS SILVA 274 P/GOP",
-        dia: "Quarta-Feira 20h00, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "Av. Alberto Byington, 177 - Vila Maria, São Paulo - SP",
-        lat: -23.5106194,
-        lng: -46.5850147
-      },
-      {
-        nome: "VOLUNTÁRIOS DA PÁTRIA 276 P/GOP",
-        dia: "Terça-Feira 20:00, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Major Caetano da Costa, 110 - Santana, São Paulo - SP",
-        lat: -23.5111504,
-        lng: -46.6273168
-      },
-      {
-        nome: "GUARDIÕES DA LIBERDADE 289 P/GOP",
-        dia: "Terça-Feira 20H00, 2a/4a/semana",
-        rito: "Rito de York",
-        enderecoTexto: "R. Guaimbé, 192 - Mooca, São Paulo - SP",
-        lat: -23.5629527,
-        lng: -46.5936413
-      },
-      {
-        nome: "LUZ DO ORIENTE II 294 P/GOP",
-        dia: "Quinta-Feira 20:00, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Mirandinha, 817 - Penha de França, São Paulo - SP",
-        lat: -23.5294751,
-        lng: -46.5358881
-      },
-      {
-        nome: "COLINA DA PENHA 307 P/GOP",
-        dia: "Quarta-Feira 20, Quinzenal Impar",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Mirandinha, 817 - Penha de França, São Paulo - SP",
-        lat: -23.5294751,
-        lng: -46.5358881
-      },
-      {
-        nome: "LUZ, PAZ E JUSTIÇA 308 P/GOP",
-        dia: "Segunda-Feira 20:00, Semanal",
-        rito: "Rito Adonhiramita",
-        enderecoTexto: "R. Ubatã, 2 - Cidade Dutra, São Paulo - SP",
-        lat: -23.7113383,
-        lng: -46.7020225
-      },
-      {
-        nome: "LUZ, PAZ E HARMONIA 339 P/GOP",
-        dia: "Mensal - Segunda-Feira - 4ª Semana - 20:00",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Ubatã, 2 - Cidade Dutra, São Paulo - SP",
-        lat: -23.7113383,
-        lng: -46.7020225
-      },
-      {
-        nome: "ALPHA LUZ SIGMA 354 P/GOP",
-        dia: "Sexta-Feira 20:00, Mensal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. das Palmeiras, 103 - Vila Buarque, São Paulo - SP",
-        lat: -23.5380423,
-        lng: -46.6503031
-      },
-      {
-        nome: "CONSTRUTORES DA VIRTUDE 411 P/GOP",
-        dia: "Quarta-Feira 20:00, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Serra de Botucatu, 1376 - Vila Gomes Cardim, São Paulo - SP",
-        lat: -23.5419536,
-        lng: -46.5585149
-      },
-      {
-        nome: "TEMPO DE ESTUDOS 428 P/GOP",
-        dia: "Sábado 14:30, 1a/3a/semana",
-        rito: "Ritual de Emulação",
-        enderecoTexto: "R. Lisboa, 1120 - Pinheiros, São Paulo - SP",
-        lat: -23.5551514,
-        lng: -46.682799
-      },
-      {
-        nome: "VERDADEIROS AMIGOS 436 P/GOP - Sala 407",
-        dia: "Quinta-Feira 20:00, 2a/4a/semana",
-        rito: "Ritual de Emulação",
-        enderecoTexto: "R. Brigadeiro Tobias, 118 - Centro, São Paulo - SP",
-        lat: -23.5469641,
-        lng: -46.6365672
-      },
-      {
-        nome: "FRATERNIDADE SÉTIMA 440 P/GOP - 4º andar",
-        dia: "Segunda-Feira 20:00, 2a/4a/semana	",
-        rito: "Rito Moderno",
-        enderecoTexto: "R. São Joaquim, 457 - Liberdade, São Paulo - SP",
-        lat: -23.5608918,
-        lng: -46.6344369
-      },
-      {
-        nome: "ESTRELA DE SÃO PAULO DXX 442 P/GOP",
-        dia: "Segunda-Feira 20:00, Semanal",
-        rito: "Rito Escocês Antigo e Aceito	",
-        enderecoTexto: "R. Jandaia, 150 - Bela Vista, São Paulo - SP",
-        lat: -23.5549326,
-        lng: -46.638024
-      },
-      {
-        nome: "FRATERNIDADE ITAQUERA 448 P/GOP",
-        dia: "Segunda-Feira 20:00, Mensal",
-        rito: "Rito Escocês Antigo e Aceito	",
-        enderecoTexto: "R. Barros Cassal, 165 - Itaquera, São Paulo - SP",
-        lat: -23.5399574,
-        lng: -46.4551743
-      },
-      {
-        nome: "COLUNAS DE SÃO JOÃO BATISTA S/N P/GOP",
-        dia: "Quinzenal - Quartas-Feiras - 1ª/3ª - 20:00",
-        rito: "Rito Escocês Antigo e Aceito	",
-        enderecoTexto: "Av. Cap. José Parada Gonçalves, 224 - Parque Mandaqui, São Paulo - SP",
-        lat: -23.4675644,
-        lng: -46.6303762
-      },
-      {
-        nome: "20 DE AGOSTO 118 P/GOP",
-        dia: "Segunda-Feira 20:00, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Egeo, 57 - Jardim do Mar, São Bernardo do Campo - SP",
-        lat: -23.6881447,
-        lng: -46.5619281
-      },
-      {
-        nome: "FRATERNIDADE DE SÃO BERNARDO DO CAMPO 82 P/GOP",
-        dia: "Terça-Feira 20:00, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Egeo, 57 - Jardim do Mar, São Bernardo do Campo - SP",
-        lat: -23.6881447,
-        lng: -46.5619281
-      },
-      {
-        nome: "CAVALEIROS DA VELHA ORDEM 429 P/GOP",
-        dia: "Sexta-Feira 20:00, 2º Semana",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Egeo, 57 - Jardim do Mar, São Bernardo do Campo - SP",
-        lat: -23.6881447,
-        lng: -46.5619281
-      },
-      {
-        nome: "ADIB MOISES DIB 288 P/GOP",
-        dia: "Sábado 09H00, 2a/4a/semana",
-        rito: "Ritual de Emulação",
-        enderecoTexto: "R. Egeo, 57 - Jardim do Mar, São Bernardo do Campo - SP",
-        lat: -23.6881447,
-        lng: -46.5619281
-      },
-      {
-        nome: "DIOLINDO MAREZI 281 P/GOP",
-        dia: "Quarta-Feira 20:00, 1a/2a/3a/4a/semana",
-        rito: "Rito Adonhiramita",
-        enderecoTexto: "Rua Professor Gieg, 73 - Vila Tupi, São Bernardo do Campo - SP",
-        lat: -23.7007226,
-        lng: -46.5453739
-      },
-      {
-        nome: "UNIÃO, LEALDADE E TRABALHO 208 P/GOP",
-        dia: "Terça-Feira 20, 1a/2a/3a/semana",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Maria de Fátima, 157 - Baeta Neves, São Bernardo do Campo - SP",
-        lat: -23.6953972,
-        lng: -46.5414873
-      },
-      {
-        nome: "ITIRO HIRANO 280 P/GOP",
-        dia: "Terça-Feira 20:00, Quinzenal Par",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Mal. Deodoro, 101 - Centro, Diadema - SP",
-        lat: -23.6877456,
-        lng: -46.615903
-      },
-      {
-        nome: "7 DE SETEMBRO V 49 P/GOP",
-        dia: "Quinta-Feira 20:00, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Mal. Deodoro, 101 - Centro, Diadema - SP",
-        lat: -23.6877456,
-        lng: -46.615903
-      },
-      {
-        nome: "FRATERNIDADE DE SANTO ANDRÉ 104 P/GOP",
-        dia: "Segunda-Feira 20:00, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Jorge Beretta, 781 - Parque Erasmo Assunção, Santo André - SP",
-        lat: -23.6375954,
-        lng: -46.5031256
-      },
-      {
-        nome: "PAULO DE TARSO GOMES DA SILVA 283 P/GOP",
-        dia: "Segunda-Feira 20:00, Semanal",
-        rito: "Ritual de Emulação",
-        enderecoTexto: "R. Onze de Junho, 717 - Casa Branca, Santo André, SP",
-        lat: -23.6635646,
-        lng: -46.5214188
-      },
-      {
-        nome: "FRATERNIDADE, JUSTIÇA, TRABALHO 212 P/GOP",
-        dia: "Quarta-Feira 20:00, Semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Onze de Junho, 717 - Casa Branca, Santo André, SP",
-        lat: -23.6635646,
-        lng: -46.5214188
-      },
-      {
-        nome: "RAZÃO E PROSPERIDADE 416 P/GOP",
-        dia: "Quinta-Feira 20:00, Semanal",
-        rito: "Rito Adonhiramita",
-        enderecoTexto: "Av. João Ramalho, 402 - Vila Assunção, Santo André - SP",
-        lat: -23.6656317,
-        lng: -46.5265951
-      },
-      {
-        nome: "CAVALEIROS DE SÃO CAETANO 180 P/GOP - Sobreloja",
-        dia: "Quarta-Feira 20H00, 2a/3a/4a/semana",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Maj. Carlos Del Prete, 546 - Santo Antônio, São Caetano do Sul - SP",
-        lat: -23.6129029,
-        lng: -46.5763677
-      },
-      {
-        nome: "Provisória S/N P/GOP",
-        dia: "Domingo - 1ª Semana - Mensal - 09:00",
-        rito: "Rito Adonhiramita",
-        enderecoTexto: "Av. Papa João XXIII, 5153 - Sertãozinho, Mauá - SP",
-        lat: -23.7076333,
-        lng: -46.4817716
-      },
-      {
-        nome: "ASGARD 353 P/GOP",
-        dia: "Quarta-Feira 20:00, 1a/3a/semana",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "Alameda Maurício de Nasau, 427 - Centro, Holambra - SP",
-        lat: -22.6260211,
-        lng: -47.0591362
-      },
-      {
-        nome: "HERMES TRISMEGISTO 323 P/GLESP",
-        dia: "Segunda-Feira 19:30, semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Urupiara, 432 - Carandiru, São Paulo - SP",
-        lat: -23.5100325,
-        lng: -46.6239414
-      },
-      {
-        nome: "APÓSTOLOS DO TEMPLO 241 P/GLESP",
-        dia: "Terça-Feira 19:30, semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Urupiara, 432 - Carandiru, São Paulo - SP",
-        lat: -23.5100325,
-        lng: -46.6239414
-      },
-      {
-        nome: "ESQUADRO E COMPASSO 217 P/GLESP",
-        dia: "Quarta-Feira 19:30, semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Urupiara, 432 - Carandiru, São Paulo - SP",
-        lat: -23.5100325,
-        lng: -46.6239414
-      },
-      {
-        nome: "FORÇA LEALDADE E PERSEVERANÇA 319 P/GLESP",
-        dia: "Quinta-Feira 19:30, semanal",
-        rito: "Rito Escocês Antigo e Aceito",
-        enderecoTexto: "R. Urupiara, 432 - Carandiru, São Paulo - SP",
-        lat: -23.5100325,
-        lng: -46.6239414
-       }
+      { nome: "Loja Guardiões do Sangreal 435", endereco: "Rua Exemplo, 100", dia: "Segunda", rito: "Escocês Antigo e Aceito" },
+      { nome: "Loja Luz da Verdade 123", endereco: "Av. Luz, 500", dia: "Quarta", rito: "Brasileiro" },
+      { nome: "Loja Estrela do Oriente 789", endereco: "Rua Oriente, 200", dia: "Sexta", rito: "Adonhiramita" }
     ];
 
-    const searchInput = document.getElementById('searchInput');
-    const lojasContainer = document.getElementById('lojasContainer');
-
-    function criarCard(loja) {
-      const enderecoGoogle = encodeURIComponent(loja.enderecoTexto);
-      const lat = loja.lat;
-      const lng = loja.lng;
-
-      return `
-        <div class="loja-card">
-          <h2>${loja.nome}</h2>
-          <p><strong>Dia da Sessão:</strong> ${loja.dia}</p>
-          <p><strong>Rito:</strong> ${loja.rito}</p>
-          <p><strong>Endereço:</strong> ${loja.enderecoTexto}</p>
-          <iframe 
-            src="https://www.google.com/maps?q=${enderecoGoogle}&output=embed" 
-            allowfullscreen 
-            loading="lazy"></iframe>
-          <div class="buttons-container">
-            <a 
-              class="gps-button" 
-              href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}" 
-              target="_blank"
-              rel="noopener noreferrer"
-            >Ir Maps</a>
-            <a 
-              class="gps-button waze-button" 
-              href="https://waze.com/ul?ll=${lat},${lng}&navigate=yes" 
-              target="_blank"
-              rel="noopener noreferrer"
-            >Ir Waze</a>
-          </div>
-        </div>
-      `;
-    }
-
     function mostrarLojas() {
-      const termoBusca = searchInput.value.toLowerCase();
+      const searchInput = document.getElementById('searchInput').value.toLowerCase();
+      const container = document.getElementById('lojasContainer');
+      container.innerHTML = '';
+
       const lojasFiltradas = lojas.filter(loja =>
-        loja.nome.toLowerCase().includes(termoBusca) ||
-        loja.enderecoTexto.toLowerCase().includes(termoBusca) ||
-        loja.dia.toLowerCase().includes(termoBusca) ||
-        loja.rito.toLowerCase().includes(termoBusca)
+        loja.nome.toLowerCase().includes(searchInput) ||
+        loja.endereco.toLowerCase().includes(searchInput) ||
+        loja.dia.toLowerCase().includes(searchInput) ||
+        loja.rito.toLowerCase().includes(searchInput)
       );
 
       if (lojasFiltradas.length === 0) {
-        lojasContainer.innerHTML = "<p style='text-align:center;'>Nenhuma loja encontrada.</p>";
+        container.innerHTML = '<p style="text-align:center;">Nenhuma loja encontrada.</p>';
       } else {
-        lojasContainer.innerHTML = lojasFiltradas.map(criarCard).join('');
+        lojasFiltradas.forEach(loja => {
+          const div = document.createElement('div');
+          div.className = 'loja';
+          div.innerHTML = `<strong>${loja.nome}</strong><br>${loja.endereco}<br>${loja.dia} - ${loja.rito}`;
+          container.appendChild(div);
+        });
       }
     }
 
-    mostrarLojas();
-
-    // Função para copiar a chave Pix, tentando Clipboard API e fallback para execCommand
-    const btnCopiarPix = document.getElementById('btnCopiarPix');
-
-    btnCopiarPix.addEventListener('click', function(event) {
-      event.preventDefault();
+    function copiarChavePix() {
       const chavePix = '11963044359';
-
-      function fallbackCopyTextToClipboard(text) {
-        const textArea = document.createElement("textarea");
-        textArea.value = text;
-        // Evita scroll na página
-        textArea.style.position = "fixed";
-        textArea.style.top = "-9999px";
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-
-        let successful = false;
-        try {
-          successful = document.execCommand('copy');
-        } catch (err) {
-          successful = false;
-        }
-
-        document.body.removeChild(textArea);
-        return successful;
-      }
-
-      function mostrarMensagemSucesso() {
-        btnCopiarPix.textContent = 'Chave Pix Copiada! Obrigado TFA!';
-        btnCopiarPix.classList.add('piscar-verde');
+      navigator.clipboard.writeText(chavePix).then(() => {
+        const mensagemPix = document.getElementById('mensagemPix');
+        mensagemPix.innerText = 'Chave Pix Copiada! Obrigado TFA';
+        mensagemPix.style.color = 'lime';
+        mensagemPix.style.animation = 'piscar 1s infinite';
         setTimeout(() => {
-          btnCopiarPix.textContent = 'Que tal nos apoiar? Contribua via Pix clicando Aqui';
-          btnCopiarPix.classList.remove('piscar-verde');
-        }, 7000);
-      }
-
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(chavePix).then(() => {
-          mostrarMensagemSucesso();
-        }).catch(() => {
-          // fallback se Clipboard API falhar
-          if (fallbackCopyTextToClipboard(chavePix)) {
-            mostrarMensagemSucesso();
-          } else {
-            alert('Erro ao copiar automaticamente, copie manualmente: ' + chavePix);
-          }
-        });
-      } else {
-        // fallback se Clipboard API não suportada
-        if (fallbackCopyTextToClipboard(chavePix)) {
-          mostrarMensagemSucesso();
-        } else {
-          alert('Seu navegador não suporta cópia automática, copie manualmente: ' + chavePix);
-        }
-      }
-    });
+          mensagemPix.innerText = '';
+          mensagemPix.style.animation = '';
+        }, 5000);
+      });
+    }
   </script>
 
+  <style>
+    @keyframes piscar {
+      0% { opacity: 1; }
+      50% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+  </style>
+
 </body>
+
 </html>
